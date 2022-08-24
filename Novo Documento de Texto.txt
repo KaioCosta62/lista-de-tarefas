@@ -1,0 +1,145 @@
+Só utilizamos let quando nossa variável realmente precisar alterar de valor
+
+const TodoList = {
+  
+}
+
+Esse objeto vai ser o responsável por controlar toda minha aplicação, pois um todo list é uma aplicação relativamente simples e pequena
+
+const TodoList = {
+  init: function(){ 
+  },
+}
+
+A propriedade init vai iniciar minha aplicação
+
+const TodoList = {
+
+  init: function(){
+    
+  },
+
+  cacheSelectors: function(){
+
+  },
+
+}
+
+CacheSelectors vai ser responsável por selecionar os elementos html e armazenar em uma variavel
+
+const TodoList = {
+
+  init: function(){
+    
+  },
+
+  cacheSelectors: function(){
+
+  },
+
+  bindEvents: function(){
+
+  },
+
+}
+
+bindEvents vai ser responsável por adicionar eventos, nessa aplicação, eventos de click e de selecionar a tecla enter
+
+A palavra this significa este, no java script temos que sempre estar atentos ao this, pois em um momento ele se referencia a X e em outro a Y 
+
+const TodoList = {
+
+  init: function(){
+    this.cacheSelectors()
+  },
+
+  cacheSelectors: function(){
+    
+  },
+
+  bindEvents: function(){
+
+  },
+
+}
+
+Nesse caso, this se referencia ao objeto TodoList
+
+cacheSelectors: function(){
+    this.checkButtons = document.querySelectorAll('.check')
+}
+
+Nesse caso o this ta colocando a variável checkButtons disponível para todo o objeto TodoList, se eu usar let/const, o checkButtons só seria visível a função cacheSelectors, e eu preciso utilizar ela na função bindEvents, então eu utilizo o this
+
+Events: {
+    
+}
+
+Dentro do objeto events, vai estar as funções de evento de cada elemento
+
+ bindEvents: function(){ // Executa eventos sobre os elementos
+
+    console.log(this) // TodoList
+    this.checkButtons.forEach(function(button){
+      console.log(this) // Window
+      //button.addEventListener('click', this.Events.checkButton_click)
+    })
+
+  },
+
+
+Note que dentro do bindEvents, o this se referencia ao objeto TodoList, mas dentro da estrutura do forEach, o this se referencia ao window, então a funcao checkButton_click nunca será encontrada, pois ela não está inserida dentro do objeto window
+
+Para conseguir chamar a função checkButton_click, eu posso declarar uma variável dentro do bindEvents, com o valor do this, com isso ao chamar ela dentro do forEach, vou conseguir localizar a função que eu desejo, pois no momento que a variável foi declarada, o this era o objeto TodoList
+
+bindEvents: function(){ // Executa eventos sobre os elementos
+    const self = this
+
+    this.checkButtons.forEach(function(button){
+      button.addEventListener('click', self.Events.checkButton_click)
+    })
+    
+  },
+
+this.$checkButtons = document.querySelectorAll('.check')
+
+Toda variavel que for armazenar algum elemento HTML, eu coloquei o $ na frente
+
+Por boa prática, é bom a gente verificar a negação da variável primeiro
+
+const isDone = li.classList.contains('done')
+
+if(!isDone){
+  return li.classList.add('done')
+}
+
+li.classList.remove('done')
+
+Basicamente se a minha li não tiver a classe done, eu vou adicionar, se ela já tiver essa classe, no próximo evento de click no elemento, vou remover
+
+Sempre que estamos dentro de um evento (keypress, click, etc) o this sempre vai se referenciar ao elemento que está ocorrendo o evento
+
+inputTask_keypress: function(e){
+  const key = e.key
+  const taskValue = e.target.value
+
+  if(key === 'Enter'){
+    console.log(this)
+    this.$list += `
+    <li>
+      <div class="check"></div>
+      <span class="task">${taskValue}</span>
+      <button class="remove"></button>
+    </li>
+    `
+    }
+
+  }
+
+Nesse exemplo o this já não faz mais referencia ao meu objeto e sim ao elemento que está recebendo o evento de keypress, no caso o input
+
+Através da função bind() eu consigo alterar o this
+
+this.$inputTask.addEventListener('keypress', self.Events.inputTask_keypress.bind(this))
+
+Na chamada da função, eu falo que a função inputTask_keypress vai se conectar ao this que referencia o objeto TodoList
